@@ -1,0 +1,22 @@
+{
+    "shulkerBox1": {
+        "x": "2459",
+        "y": "81",
+        "z": "-2644"
+    },
+    "shulkerBox2": {
+        "x": "2459",
+        "y": "81",
+        "z": "-2649"
+    },
+    "shulkerBox3": {
+        "x": "2459",
+        "y": "81",
+        "z": "-2647"
+    },
+    "shopitem_click_delay": 300,
+    "waitfor_next_delay": 1000,
+    "max_check_sb_times": 10,
+    "Auto_Announce_Time": 605000,
+    "Auto_Announce_text": ""
+}
