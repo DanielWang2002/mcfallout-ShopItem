@@ -35,9 +35,9 @@ function connects() {
             cl(`使用 ${bot.username} 登入成功`)
             // 遊戲內ID與config(DB)不同
             
-            // AutoAnnounce = setInterval(() => {
-            //     bot.chat(`${settings.Auto_Announce_text}`)
-            // }, settings.Auto_Announce_Time)
+            AutoAnnounce = setInterval(() => {
+                bot.chat(`${settings.Auto_Announce_text}`)
+            }, settings.Auto_Announce_Time)
 
         })
 
