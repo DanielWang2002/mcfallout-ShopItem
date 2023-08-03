@@ -5,19 +5,12 @@ let request = require('request-promise');
 const tokens = require('prismarine-tokens-fixed');  //讀取prismarine-tokens-fixed(驗證緩存)模塊
 const vec3 = require('vec3')
 
-/*
-TODO: - [系統] 你身上沒有足夠的空間換取此物品。 請空出足夠的空間。
- */
-
 const whitelist = config.whitelist
 let isCommandStop = false
 let stopClickWindow = false
 let find_Source_Save_sb = false
 let not_found_sb_count = 0
 let AutoAnnounce
-
-// 遊戲ID
-let GameID
 
 let opt = {
     host: config.ip,
@@ -39,20 +32,12 @@ function connects() {
 
         bot.once('spawn', () => {
             let mcData = require('minecraft-data')(bot.version)
-            GameID = bot.username
+            cl(`使用 ${bot.username} 登入成功`)
             // 遊戲內ID與config(DB)不同
-            if (GameID !== config.username) {
-                cl(`您的遊戲ID與資料庫不符合，請檢查config.json中的username`)
-                cl(`有任何疑問請私訊Discord: Daniel Wang#0612`)
-                cl(`程式即將關閉...`)
-                setTimeout(function () {
-                    process.exit()
-                }, 3000)
-            }
             
-            AutoAnnounce = setInterval(() => {
-                bot.chat(`${settings.Auto_Announce_text}`)
-            }, settings.Auto_Announce_Time)
+            // AutoAnnounce = setInterval(() => {
+            //     bot.chat(`${settings.Auto_Announce_text}`)
+            // }, settings.Auto_Announce_Time)
 
         })
 
@@ -548,104 +533,4 @@ function cl(msg) {
     console.log(getDateTime() + " " + msg)
 }
 
-function Auth() {
-    let key = config.key
-    let email = config.username
-
-    let options = {
-        'method': 'GET',
-        'url': `http://139.99.89.162:8090/shop_item/checkKey/${key}`,
-        'headers': {
-        }
-    };
-    request(options, function (error, response) {
-        if (error) throw new Error(error);
-        // 金鑰無效
-        if (response.body == "Invalid Key") {
-            return false
-        }
-
-        let res = JSON.parse(response.body)
-        // 金鑰正確
-        if (key == res.key) {
-
-            // 帳號與登錄在資料庫的帳號一樣
-            if (email == res.email) {
-                // key & email都一樣 可以登入
-                key_is_valid = true
-                cl("金鑰正確")
-                cl(`即將登入...`)
-
-                // 帳號與登錄在資料庫的帳號不一樣，將資料庫的更新為現登入帳號
-            } else {
-                options = {
-                    'method': 'POST',
-                    'url': `http://139.99.89.162:8090/shop_item/updateKey/${key}/${email}`,
-                    'headers': {
-                    }
-                }
-                request(options, function (error, response) {
-                    if (error) throw new Error(error);
-                });
-                key_is_valid = true
-                cl("金鑰正確")
-                cl(`先前未登入過有其他帳號登入過，已更新為帳號: ${email}`)
-                cl(`即將登入...`)
-            }
-        }
-    });
-
-}
-
-let isClose = false
-
-function checkKey_cycle() {
-    setInterval(() => {
-
-        let key = config.key
-        let email = config.username
-        let options = {
-            'method': 'GET',
-            'url': `http://139.99.89.162:8090/shop_item/checkKey/${key}`,
-            'headers': {
-            }
-        };
-        request(options, function (error, response) {
-            if (error) throw new Error(error);
-            // 金鑰無效
-            if (response.body == "Invalid Key") {
-                cl("偵測到序號錯誤！")
-                return false
-            }
-            let res = JSON.parse(response.body)
-            // console.log(res)
-            // 金鑰正確
-            if (key == res.key) {
-
-                // 帳號與登錄在資料庫的帳號不一致(登入後金鑰在他處登入)
-                if (email != res.email) {
-                    if (!isClose) {
-                        console.log(getDateTime())
-                        cl(`偵測到該序號在他處被使用！ 3秒後將關閉程式`)
-                        cl(`有任何問題請至DC詢問！`)
-                    }
-                    isClose = true
-                    setTimeout(function () {
-                        process.exit()
-                    }, 3000)
-                }
-            }
-        });
-    }, 30000);
-}
-
-Auth()
-
-setTimeout(() => {
-    if (key_is_valid) {
-        connects()
-        checkKey_cycle()
-    } else {
-        cl("金鑰不正確，請檢查您的序號")
-    }
-}, 1000);
+connects()
